@@ -27,16 +27,11 @@ def make_request(&block)
 end
 
 pending_disable = make_request do
-  Array.new.tap do |queue|
-    no_retweet_ids = client.no_retweet_ids
-
-    client.friends(skip_status: true, include_user_entities: false).each do |friend|
-      if !no_retweet_ids.include?(friend.id)
-        queue << friend
-      end
-    end
-  end
+  no_retweet_ids = client.no_retweet_ids
+  client.friends.to_a.reject { |f| no_retweet_ids.include?(f.id) }
 end
+
+puts "Found #{pending_disable.length} users to disable RTs from"
 
 pending_disable.each do |friend|
   make_request do
