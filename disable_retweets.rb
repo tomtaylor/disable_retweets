@@ -39,3 +39,5 @@ pending_disable.each do |friend|
     client.friendship_update(friend, retweets: false)
   end
 end
+
+puts "All done."
