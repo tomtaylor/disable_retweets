@@ -26,17 +26,22 @@ def make_request(&block)
   end
 end
 
+no_retweet_ids = make_request do
+  client.no_retweet_ids
+end
+
+puts "Found #{no_retweet_ids.length} users with RTs already disabled"
+
 pending_disable = make_request do
-  no_retweet_ids = client.no_retweet_ids
-  client.friends.to_a.reject { |f| no_retweet_ids.include?(f.id) }
+  client.friend_ids.to_a.reject { |f| no_retweet_ids.include?(f) }
 end
 
 puts "Found #{pending_disable.length} users to disable RTs from"
 
-pending_disable.each do |friend|
+pending_disable.each do |friend_id|
   make_request do
-    puts "Disabling retweets from @#{friend.screen_name}"
-    client.friendship_update(friend, retweets: false)
+    puts "Disabling retweets from ID #{friend_id}"
+    client.friendship_update(friend_id, retweets: false)
   end
 end
 
